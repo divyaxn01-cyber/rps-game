@@ -48,6 +48,11 @@ button {
   border-radius: 12px;
   background: linear-gradient(135deg, #00ffe5, #0077ff);
   cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  transform: scale(1.05);
 }
 
 .hidden { display: none; }
@@ -87,7 +92,6 @@ button {
   }
 }
 </style>
-
 </head>
 
 <body>
@@ -120,6 +124,9 @@ button {
       <span id="name1"></span>: <span id="s1">0</span> |
       <span id="name2"></span>: <span id="s2">0</span>
     </h4>
+
+    <!-- 👇 COMPUTER OUTPUT FIX -->
+    <p id="cpuShow"></p>
 
     <button onclick="rematch()">Rematch</button>
 
@@ -212,6 +219,12 @@ function showResult() {
 
   document.getElementById("card").className = "card " + type;
   document.getElementById("result").innerText = result;
+
+  // ✅ SHOW COMPUTER CHOICE
+  if (vsComputer) {
+    document.getElementById("cpuShow").innerText =
+      "🤖 Computer chose: " + computerChoice;
+  }
 
   document.getElementById("popup").classList.add("show");
 
