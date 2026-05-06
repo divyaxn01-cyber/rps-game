@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RPS Game</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
+  color: white;
+}
+
+.game {
+  width: 340px;
+  padding: 25px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 25px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+h2 {
+  color: #00ffe5;
+  text-shadow: 0 0 10px #00ffe5;
+}
+
+input, select {
+  width: 90%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+button {
+  margin: 6px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #00ffe5, #0077ff);
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+.popup {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.7);
+}
+
+.popup.show { display: flex; }
+
+.card {
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.pink { background: #ff6fa3; }
+.blue { background: #4da6ff; }
+
+.confetti {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  top: -10px;
+  animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="game">
+
+  <h2>Rock Paper Scissors</h2>
+
+  <div id="startScreen">
+    <input id="p1" placeholder="Player 1 Name">
+    <input id="p2" placeholder="Player 2 Name (optional)">
+
+    <select id="mode">
+      <option value="pvp">Player vs Player</option>
+      <option value="cpu">Player vs Computer</option>
+    </select>
+
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="gameScreen" class="hidden">
+
+    <h3 id="turn"></h3>
+
+    <button onclick="pick('stone')">🪨</button>
+    <button onclick="pick('paper')">📄</button>
+    <button onclick="pick('scissors')">✂️</button>
+
+    <h4>
+      <span id="name1"></span>: <span id="s1">0</span> |
+      <span id="name2"></span>: <span id="s2">0</span>
+    </h4>
+
+    <button onclick="rematch()">Rematch</button>
+
+  </div>
+
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="popup">
+  <div id="card" class="card">
+    <h2 id="result"></h2>
+    <button onclick="nextRound()">Next Round</button>
+  </div>
+</div>
+
+<script>
+
+let p1, p2;
+let turn = 1;
+let c1 = "", c2 = "";
+let s1 = 0, s2 = 0;
+let vsComputer = false;
+let computerChoice = "";
+
+function startGame() {
+
+  p1 = document.getElementById("p1").value || "Player 1";
+  p2 = document.getElementById("p2").value || "Player 2";
+
+  vsComputer = document.getElementById("mode").value === "cpu";
+
+  if (vsComputer) p2 = "Computer 🤖";
+
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+
+  document.getElementById("name1").innerText = p1;
+  document.getElementById("name2").innerText = p2;
+
+  document.getElementById("turn").innerText = p1 + " Turn";
+}
+
+function pick(choice) {
+
+  if (vsComputer) {
+    c1 = choice;
+
+    const options = ["stone", "paper", "scissors"];
+    computerChoice = options[Math.floor(Math.random() * 3)];
+    c2 = computerChoice;
+
+    showResult();
+    return;
+  }
+
+  if (turn === 1) {
+    c1 = choice;
+    turn = 2;
+  } else {
+    c2 = choice;
+    showResult();
+  }
+}
+
+function showResult() {
+
+  let result = "";
+  let type = "";
+
+  if (c1 === c2) {
+    result = "Draw!";
+    type = "pink";
+  }
+  else if (
+    (c1 === "stone" && c2 === "scissors") ||
+    (c1 === "paper" && c2 === "stone") ||
+    (c1 === "scissors" && c2 === "paper")
+  ) {
+    s1++;
+    result = p1 + " Wins!";
+    type = "pink";
+  } else {
+    s2++;
+    result = p2 + " Wins!";
+    type = "blue";
+  }
+
+  document.getElementById("s1").innerText = s1;
+  document.getElementById("s2").innerText = s2;
+
+  document.getElementById("card").className = "card " + type;
+  document.getElementById("result").innerText = result;
+
+  document.getElementById("popup").classList.add("show");
+
+  launchConfetti();
+}
+
+function nextRound() {
+  document.getElementById("popup").classList.remove("show");
+  turn = 1;
+}
+
+function rematch() {
+  s1 = 0;
+  s2 = 0;
+  document.getElementById("s1").innerText = 0;
+  document.getElementById("s2").innerText = 0;
+  nextRound();
+}
+
+function launchConfetti() {
+  const colors = ["#ff6fa3","#4da6ff","#ffd166","#06d6a0","#fff"];
+
+  for (let i = 0; i < 60; i++) {
+    let c = document.createElement("div");
+    c.classList.add("confetti");
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDuration = (Math.random() * 2 + 2) + "s";
+
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+
+</script>
+
+</body>
+</html>
