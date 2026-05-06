@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>RPS Game</title>
+<title>Rock Paper Scissors</title>
 
 <style>
 body {
@@ -34,7 +34,7 @@ h2 {
 input, select {
   width: 90%;
   padding: 10px;
-  margin: 5px 0;
+  margin: 6px 0;
   border-radius: 8px;
   border: none;
 }
@@ -51,6 +51,7 @@ button {
 
 .hidden { display: none; }
 
+/* POPUP */
 .popup {
   position: fixed;
   inset: 0;
@@ -65,14 +66,14 @@ button {
 .card {
   padding: 20px;
   border-radius: 15px;
-  color: white;
   text-align: center;
+  color: white;
 }
 
 .pink { background: #ff4d8d; }
 .blue { background: #4da6ff; }
 
-/* 🎉 CONFETTI */
+/* CONFETTI */
 .confetti {
   position: fixed;
   width: 8px;
@@ -106,7 +107,7 @@ button {
       <option value="cpu">Player vs Computer</option>
     </select>
 
-    <button onclick="startGame()">Start</button>
+    <button onclick="startGame()">Start Game</button>
   </div>
 
   <div id="gameScreen" class="hidden">
@@ -126,7 +127,7 @@ button {
 
 </div>
 
-<!-- POPUP -->
+<!-- RESULT POPUP -->
 <div id="popup" class="popup">
   <div id="card" class="card">
     <h2 id="result"></h2>
@@ -146,6 +147,7 @@ let s1 = 0, s2 = 0;
 
 let computerChoice = "";
 
+/* START */
 function startGame() {
 
   p1 = document.getElementById("p1").value || "Player 1";
@@ -161,19 +163,22 @@ function startGame() {
   document.getElementById("n1").innerText = p1;
   document.getElementById("n2").innerText = p2;
 
+  turn = 1;
   document.getElementById("turn").innerText = p1 + " Turn";
 }
 
+/* PICK */
 function pick(choice) {
 
-  c1 = choice;
-
   if (mode === "cpu") {
+
+    c1 = choice;
 
     const options = ["stone", "paper", "scissors"];
     computerChoice = options[Math.floor(Math.random() * 3)];
 
     c2 = computerChoice;
+
     showResult();
     return;
   }
@@ -188,13 +193,15 @@ function pick(choice) {
   }
 }
 
+/* RESULT */
 function showResult() {
 
   let result = "";
-  let color = "pink";
+  let color = "";
 
   if (c1 === c2) {
     result = "Draw!";
+    color = "pink";
   }
   else if (
     (c1 === "stone" && c2 === "scissors") ||
@@ -228,13 +235,14 @@ function showResult() {
   launchConfetti();
 }
 
+/* NEXT ROUND */
 function nextRound() {
   document.getElementById("popup").classList.remove("show");
   turn = 1;
   document.getElementById("turn").innerText = p1 + " Turn";
 }
 
-/* 🎉 CONFETTI */
+/* CONFETTI */
 function launchConfetti() {
 
   const colors = ["#ff4d8d","#4da6ff","#ffd166","#06d6a0","#fff"];
@@ -247,7 +255,6 @@ function launchConfetti() {
     c.style.animationDuration = (Math.random() * 2 + 2) + "s";
 
     document.body.appendChild(c);
-
     setTimeout(() => c.remove(), 3000);
   }
 }
