@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Rock Paper Scissors</title>
+<title>RPS Game</title>
 
 <style>
 body {
@@ -12,22 +12,41 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #111;
+  background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
   color: white;
   text-align: center;
 }
 
 .game {
+  width: 340px;
   padding: 20px;
-  border: 2px solid #444;
-  border-radius: 12px;
-  width: 300px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+h2 {
+  color: #00ffe5;
+  text-shadow: 0 0 10px #00ffe5;
+}
+
+input, select {
+  width: 90%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: none;
 }
 
 button {
   padding: 10px;
   margin: 5px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00ffe5, #0077ff);
   cursor: pointer;
+  font-weight: bold;
 }
 
 .hidden { display: none; }
@@ -44,10 +63,29 @@ button {
 .popup.show { display: flex; }
 
 .card {
-  background: white;
-  color: black;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+}
+
+.pink { background: #ff4d8d; }
+.blue { background: #4da6ff; }
+
+/* 🎉 CONFETTI */
+.confetti {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  top: -10px;
+  animation: fall 3s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
 }
 </style>
 
@@ -57,15 +95,15 @@ button {
 
 <div class="game">
 
-  <h2>RPS Game</h2>
+  <h2>Rock Paper Scissors</h2>
 
   <div id="startScreen">
     <input id="p1" placeholder="Player 1"><br>
-    <input id="p2" placeholder="Player 2 (optional)"><br>
+    <input id="p2" placeholder="Player 2"><br>
 
     <select id="mode">
-      <option value="pvp">PvP</option>
-      <option value="cpu">CPU</option>
+      <option value="pvp">Player vs Player</option>
+      <option value="cpu">Player vs Computer</option>
     </select>
 
     <button onclick="startGame()">Start</button>
@@ -90,10 +128,10 @@ button {
 
 <!-- POPUP -->
 <div id="popup" class="popup">
-  <div class="card">
+  <div id="card" class="card">
     <h2 id="result"></h2>
     <p id="cpuText"></p>
-    <button onclick="nextRound()">Next</button>
+    <button onclick="nextRound()">Next Round</button>
   </div>
 </div>
 
@@ -153,9 +191,10 @@ function pick(choice) {
 function showResult() {
 
   let result = "";
+  let color = "pink";
 
   if (c1 === c2) {
-    result = "Draw";
+    result = "Draw!";
   }
   else if (
     (c1 === "stone" && c2 === "scissors") ||
@@ -163,10 +202,12 @@ function showResult() {
     (c1 === "scissors" && c2 === "paper")
   ) {
     s1++;
-    result = p1 + " Wins";
+    result = p1 + " Wins!";
+    color = "pink";
   } else {
     s2++;
-    result = p2 + " Wins";
+    result = p2 + " Wins!";
+    color = "blue";
   }
 
   document.getElementById("s1").innerText = s1;
@@ -181,13 +222,34 @@ function showResult() {
     document.getElementById("cpuText").innerText = "";
   }
 
+  document.getElementById("card").className = "card " + color;
   document.getElementById("popup").classList.add("show");
+
+  launchConfetti();
 }
 
 function nextRound() {
   document.getElementById("popup").classList.remove("show");
   turn = 1;
   document.getElementById("turn").innerText = p1 + " Turn";
+}
+
+/* 🎉 CONFETTI */
+function launchConfetti() {
+
+  const colors = ["#ff4d8d","#4da6ff","#ffd166","#06d6a0","#fff"];
+
+  for (let i = 0; i < 50; i++) {
+    let c = document.createElement("div");
+    c.classList.add("confetti");
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDuration = (Math.random() * 2 + 2) + "s";
+
+    document.body.appendChild(c);
+
+    setTimeout(() => c.remove(), 3000);
+  }
 }
 
 </script>
